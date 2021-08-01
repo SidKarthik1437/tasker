@@ -1,0 +1,49 @@
+<Dropdown
+              color="blue"
+              placement="bottom-start"
+              buttonText="List"
+              buttonType="outline"
+              size="regular"
+              rounded={false}
+              block={false}
+              ripple="dark"
+              className="m-5 ml-1"
+            >
+              {/* <DropdownItem color="green" ripple="light">
+                Action
+              </DropdownItem> */}
+
+{SnapList?.docs.map((List) => (
+            
+            <DropdownItem color="yellow" ripple="light" onClick={(e) => console.log(e.target.value) }>
+              {List.data().listname}
+            </DropdownItem>
+            
+          ))}
+            </Dropdown>
+
+            <Dropdown
+              color="blueGray"
+              placement="bottom-start"
+              buttonText="Color"
+              buttonType="outline"
+              size="regular"
+              rounded={false}
+              block={false}
+              ripple="dark"
+              className="m-5 ml-0"
+            >
+              <DropdownItem color="blueGray" ripple="light">
+                Action
+              </DropdownItem>
+              <DropdownLink
+                href="#"
+                ripple="light"
+                onClick={(e) => e.preventDefault()}
+              >
+                Another Action
+              </DropdownLink>
+              <DropdownItem color="blueGray" ripple="light">
+                Something else
+              </DropdownItem>
+            </Dropdown>

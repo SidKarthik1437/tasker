@@ -6,9 +6,18 @@
     "start": "next start"
   },
   "dependencies": {
+    "@dnd-kit/core": "^3.1.1",
+    "@dnd-kit/sortable": "^4.0.0",
+    "@material-tailwind/react": "0.3.4",
+    "@material-ui/core": "^4.12.3",
+    "@next-auth/firebase-adapter": "^0.1.2",
+    "firebase": "^8.7.1",
     "next": "latest",
+    "next-auth": "^3.27.3",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-beautiful-dnd": "^13.1.0",
+    "react-dom": "^17.0.2",
+    "react-firebase-hooks": "^3.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.6",
