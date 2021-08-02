@@ -1,48 +1,48 @@
-import { useState, useRef, useEffect } from 'react';
-import Head from 'next/head';
-import { getSession, useSession } from 'next-auth/client';
-import Login from '../components/login';
-import Modal from '@material-tailwind/react/Modal';
-import ModalBody from '@material-tailwind/react/ModalBody';
-import ModalFooter from '@material-tailwind/react/ModalFooter';
-import Button from '@material-tailwind/react/Button';
-import Icon from '@material-tailwind/react/Icon';
-import Tooltips from '@material-tailwind/react/Tooltips';
-import TooltipsContent from '@material-tailwind/react/TooltipsContent';
-import Header from '../components/header';
-import firebase from 'firebase';
-import { Firebase } from '../firebase';
-import ListCard from '../components/list';
-import Input from '@material-tailwind/react/Input';
-import { DragDropContext } from 'react-beautiful-dnd';
-
+import { useState, useRef, useEffect } from "react";
+import Head from "next/head";
+import { getSession, useSession } from "next-auth/client";
+import Login from "../components/login";
+import Modal from "@material-tailwind/react/Modal";
+import ModalBody from "@material-tailwind/react/ModalBody";
+import ModalFooter from "@material-tailwind/react/ModalFooter";
+import Button from "@material-tailwind/react/Button";
+import Icon from "@material-tailwind/react/Icon";
+import Tooltips from "@material-tailwind/react/Tooltips";
+import TooltipsContent from "@material-tailwind/react/TooltipsContent";
+import Header from "../components/header";
+import firebase from "firebase";
+import { Firebase } from "../firebase";
+import ListCard from "../components/list";
+import Input from "@material-tailwind/react/Input";
+import { DragDropContext } from "react-beautiful-dnd";
 
 export default function Home() {
   const buttonRef = useRef();
   const [session] = useSession();
   if (!session) return <Login />;
 
-  const [List, setList] = useState('');
+  const [List, setList] = useState("");
   const [SnapList, setSnapList] = useState();
-  const [Task, setTask] = useState('');
-  const [TaskList, setTaskList] = useState('');
+  const [Task, setTask] = useState("");
+  const [TaskList, setTaskList] = useState("");
   const [showListModal, setShowListModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [order, setOrder] = useState();
-  
 
   useEffect(() => {
-    Firebase.collection('userLists').doc(session.user.email).collection('Lists').onSnapshot(snapshot => {
-      setOrder(snapshot.docs.map((doc) => doc.data()))
-    })
-  }, [showListModal])
-  console.log(order)
-  
-  async function addList() {
-
-    await Firebase.collection('userLists')
+    Firebase.collection("userLists")
       .doc(session.user.email)
-      .collection('Lists')
+      .collection("Lists")
+      .onSnapshot((snapshot) => {
+        setOrder(snapshot.docs.map((doc) => doc.data()));
+      });
+  }, [showListModal]);
+  console.log(order);
+
+  async function addList() {
+    await Firebase.collection("userLists")
+      .doc(session.user.email)
+      .collection("Lists")
       .doc(List)
       .set({
         listname: List,
@@ -50,42 +50,41 @@ export default function Home() {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-
-    Firebase.collection('userLists')
+    Firebase.collection("userLists")
       .doc(session.user.email)
       .update({
         order: firebase.firestore.FieldValue.arrayUnion(List),
       });
 
-    setList('');
+    setList("");
     setShowListModal(false);
   }
   async function addTask() {
-    const doc = await Firebase.collection('userLists')
+    const doc = await Firebase.collection("userLists")
       .doc(session.user.email)
-      .collection('Tasks')
+      .collection("Tasks")
       .add({
         list: TaskList,
         task: Task,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-    Firebase.collection('userLists')
+    Firebase.collection("userLists")
       .doc(session.user.email)
-      .collection('Lists')
+      .collection("Lists")
       .doc(TaskList)
       .update({
         tasks: firebase.firestore.FieldValue.arrayUnion(doc.id),
       });
 
-    setTask('');
+    setTask("");
     setShowTaskModal(false);
   }
 
   useEffect(() => {
-    Firebase.collection('userLists')
+    Firebase.collection("userLists")
       .doc(session.user.email)
-      .collection('Lists')
+      .collection("Lists")
       .onSnapshot((snapshot) => {
         setSnapList(snapshot.docs.map((doc) => doc.data()));
       });
@@ -114,7 +113,7 @@ export default function Home() {
           </div>
           <Input
             value={Task}
-            onKeyDown={(e) => e.key === 'Enter' && addTask()}
+            onKeyDown={(e) => e.key === "Enter" && addTask()}
             onChange={(e) => setTask(e.target.value)}
             type="text"
             outline={true}
@@ -149,7 +148,7 @@ export default function Home() {
       <ModalBody>
         <input
           value={List}
-          onKeyDown={(e) => e.key === 'Enter' && addList()}
+          onKeyDown={(e) => e.key === "Enter" && addList()}
           onChange={(e) => setList(e.target.value)}
           type="text"
           className="outline-none w-full"
@@ -174,53 +173,42 @@ export default function Home() {
 
   const showModal = (event) => {
     event.preventDefault();
-    addEventListener('mousedown', (event) => {
-      if (event.target.id === 'cont') {
+    addEventListener("mousedown", (event) => {
+      if (event.target.id === "cont") {
         setShowListModal(true);
-      } else if (event.target.id === 'task') {
+      } else if (event.target.id === "task") {
         setShowTaskModal(true);
       }
     });
   };
 
-  
-const onDragEnd = () => {
-
-}
+  const onDragEnd = () => {
+    console.log("drag ended");
+  };
   return (
-    <DragDropContext
-     onDragEnd={onDragEnd}
-    >
-    <div
-    className="flex flex-col w-full h-screen justify-between" id="cont"
-    >
-      
+    <div className="flex flex-col w-full h-screen justify-between" id="cont">
+      <DragDropContext onDragEnd={onDragEnd}>
         <Head>
           <title>Tasker</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        
+
         <Header />
         {ListModal}
         {TaskModal}
         <div
           id="cont"
-          className="flex flex-grow p-5"
+          className="flex w-full flex-grow p-5"
           onClick={(e) => showModal(e)}
         >
-          
-            {SnapList?.map((List) => (
-              
-                <ListCard
-                  key={List.id}
-                  id={List.id}
-                  ListName={List.listname}
-                  date={List.timestamp}
-                  
-                />
-              
-            ))}
-          
+          {SnapList?.map((List, index) => (
+            <ListCard
+              key={List.id}
+              id={List.id}
+              ListName={List.listname}
+              date={List.timestamp}
+            />
+          ))}
         </div>
         <div
           className="flex w-full justify-end p-5 select-none"
@@ -245,9 +233,8 @@ const onDragEnd = () => {
             <TooltipsContent className="text-bg">Add Task</TooltipsContent>
           </Tooltips>
         </div>
-      
+      </DragDropContext>
     </div>
-    </DragDropContext>
   );
 }
 
